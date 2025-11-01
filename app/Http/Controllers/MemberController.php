@@ -31,6 +31,21 @@ class MemberController extends Controller
         $query = MemberFilters::apply(Member::query(), $filters)
             ->orderByDesc('id');
 
+        $limit = (int) $request->query('limit', 0);
+        $page = max((int) $request->query('page', 1), 1);
+
+        if ($limit > 0) {
+            $total = (clone $query)->count();
+            $members = $query->forPage($page, $limit)->get();
+
+            return response()->json([
+                'data' => $members,
+                'total' => $total,
+                'page' => $page,
+                'limit' => $limit,
+            ]);
+        }
+
         $members = $query->get();
 
         return response()->json([

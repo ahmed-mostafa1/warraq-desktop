@@ -34,7 +34,25 @@ return [
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DB_URL'),
-            'database' => env('DB_DATABASE', database_path('database.sqlite')),
+            // Normalize the SQLite path to an absolute path when a relative path is provided in .env
+            'database' => (static function () {
+                $value = env('DB_DATABASE');
+                if (! $value || $value === '') {
+                    return database_path('database.sqlite');
+                }
+                // If it looks like a connection URI, return as-is
+                if (str_contains($value, '://')) {
+                    return $value;
+                }
+                // Special SQLite in-memory database
+                if ($value === ':memory:') {
+                    return $value;
+                }
+                // Windows absolute path (e.g., C:\\ or \\server\\share) or Unix absolute path
+                $isAbsolute = (bool) preg_match('/^(?:[A-Za-z]:\\\\|\\\\\\\\|\/)/', $value);
+
+                return $isAbsolute ? $value : base_path($value);
+            })(),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
             'busy_timeout' => null,

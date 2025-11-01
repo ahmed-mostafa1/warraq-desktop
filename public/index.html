@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/assets/fav-icon-md-jUPnv.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="نظام إدارة سجلات الأعضاء - أمانة محافظة الجيزة - أمانة الوراق" />
+    <title>أمانة محافظة الجيزة - أمانة الوراق</title>
+    
+    <!-- Arabic Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- English Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+      (function(){
+        var METHODS=["PUT","PATCH","DELETE"];
+        function shouldOverride(url){
+          try{ var u=new URL(url, window.location.origin); return u.origin===window.location.origin && u.pathname.startsWith('/api/'); }catch(e){ return false; }
+        }
+        // Patch fetch
+        if(window.fetch){
+          var origFetch=window.fetch;
+          window.fetch=function(input, init){
+            var url=typeof input==='string'?input:(input&&input.url)||'';
+            var opts=init||{}; var method=(opts.method||'GET').toUpperCase();
+            if(shouldOverride(url) && METHODS.indexOf(method)>-1){
+              opts.method='POST';
+              opts.headers=opts.headers||{};
+              try{ if(opts.headers instanceof Headers){ opts.headers.set('X-HTTP-Method-Override', method); } else { opts.headers['X-HTTP-Method-Override']=method; } }catch(e){}
+              return origFetch(input, opts);
+            }
+            return origFetch(input, init);
+          };
+        }
+        // Patch XMLHttpRequest (covers axios XHR adapter)
+        if(window.XMLHttpRequest){
+          var OrigXHR=window.XMLHttpRequest;
+          function PatchedXHR(){
+            var xhr=new OrigXHR();
+            var _open=xhr.open;
+            xhr.open=function(method,url,async,user,pw){
+              var m=(method||'GET').toUpperCase();
+              xhr._needsOverride = shouldOverride(url) && METHODS.indexOf(m)>-1 ? m : null;
+              return _open.call(xhr, xhr._needsOverride ? 'POST' : method, url, async, user, pw);
+            };
+            var _send=xhr.send;
+            xhr.send=function(body){
+              if(xhr._needsOverride){
+                try{ xhr.setRequestHeader('X-HTTP-Method-Override', xhr._needsOverride); }catch(e){}
+                xhr._needsOverride=null;
+              }
+              return _send.call(xhr, body);
+            };
+            return xhr;
+          }
+          window.XMLHttpRequest=PatchedXHR;
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-BAQ1t44U.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/react-CDaM45aE.js">
+    <link rel="modulepreload" crossorigin href="/assets/redux-B-PQYK6M.js">
+    <link rel="modulepreload" crossorigin href="/assets/charts-AZ2iZ16m.js">
+    <link rel="modulepreload" crossorigin href="/assets/xlsx-D_0l8YDs.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-DJ4zsbu7.css">
+  </head>
+  <body class="font-arabic">
+    <div id="root"></div>
+  </body>
+</html>
